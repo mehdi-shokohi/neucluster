@@ -28,6 +28,8 @@ httpServer.on('pre_route',req=>{
   req.xx={alpha:++x}
 })
 
+
+// Job Scheduler
 let sch = require("./component/ScheduleBuilder")
-var job = new sch(__dirname+"/jobs",['job1','job2'])
-job.run()
+var job = new sch(__dirname+"/jobs",['job1','job2']) // Set Job's Folder and File's
+ job.run()
