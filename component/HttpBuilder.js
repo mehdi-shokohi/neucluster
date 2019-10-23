@@ -31,28 +31,31 @@ class MMicrosHttp extends EventEmitter{
 
     if(this.instanceNum>1){
 
-      if (cluster.isMaster) {
-        console.log(`Master ${process.pid} is running`);
+      if (cluster.isMaster ) {
+
+        console.log(`Http Master ${process.pid} is running`);
 
         // Fork workers.
         for (let i = 0; i < this.instanceNum; i++) {
-          cluster.fork();
+      cluster.fork();
+
         }
-
         cluster.on('exit', (worker, code, signal) => {
-          console.log(`worker ${worker.process.pid} died`);
+          console.log(`Http worker ${worker.process.pid} died`);
         });
-      } else {
-        this.server = http.createServer()
+      } else if(cluster.isWorker ){
 
-        this.server.on("request", (req, res) => {
-          this.emit('pre_route', req)
-          this.router(req, res, finalHandler(req, res))
-        })
-        this.server.listen(this.port)
+          this.server = http.createServer()
 
-        console.log(`Worker ${process.pid} started`);
-      }
+          this.server.on("request", (req, res) => {
+            this.emit('pre_route', req)
+            this.router(req, res, finalHandler(req, res))
+          })
+          this.server.listen(this.port)
+          console.log(`Http Worker ${process.pid} started`);
+          }
+
+
 
     }else {
       this.server = http.createServer()
