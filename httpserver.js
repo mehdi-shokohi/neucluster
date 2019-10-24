@@ -9,7 +9,7 @@ var bodyParser   = require('body-parser')
 // those will be  accessible By File Name.
 require('./component/service_loader')(__dirname+"/services")
 
-let ControllerPath = __dirname+"/api";
+let ControllerPath = __dirname+"/api_2030";
 var httpServer = new httpBuilder(2030,ControllerPath,3);//Set Port and Controller Path Folder Name. and Cluster Instance Number
 var x=0;
 
@@ -29,7 +29,17 @@ httpServer.on('pre_route',req=>{
 })
 
 
+
 // Job Scheduler
 let sch = require("./component/ScheduleBuilder")
 var job = new sch(__dirname+"/jobs",['job1','job2']) // Set Job's Folder and File's
- job.run()
+job.run()
+
+
+
+ControllerPath = __dirname+"/api_2040";
+var httpServer2 = new httpBuilder(2040,ControllerPath,4);
+httpServer2.run()
+
+
+

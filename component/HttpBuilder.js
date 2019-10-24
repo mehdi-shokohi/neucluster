@@ -4,9 +4,7 @@ var Router       = require('router')
 var finalHandler = require('finalhandler')
 var EventEmitter = require('events')
 const cluster = require('cluster');
-var memShm = require('mem-shm');
-var mem = new memShm("mmicro","workers");
-const memoryId='share_worker'
+var mem = require('./worker_mem')
 class MMicrosHttp extends EventEmitter{
 
   constructor(port,controller_path,instance_Num){
@@ -33,12 +31,12 @@ class MMicrosHttp extends EventEmitter{
 
       if (cluster.isMaster ) {
 
-        console.log(`Http Master ${process.pid} is running`);
 
         // Fork workers.
         for (let i = 0; i < this.instanceNum; i++) {
      var worker =  cluster.fork();
-          mem.set(memoryId,worker.id,{type:'http'});
+          mem.shmSet(worker.id,{type:this.port});
+          // console.log(`Create Worker For HTTP Server On ${worker.id} Process(${worker.process.pid})`)
 
 
         }
@@ -46,8 +44,9 @@ class MMicrosHttp extends EventEmitter{
           console.log(`Http worker ${worker.process.pid} died`);
         });
       } else if(cluster.isWorker) {
-        let my = mem.get(memoryId,cluster.worker.id);
-        if (my.type === 'http') {
+        let my = mem.shmGet(cluster.worker.id);
+
+        if (my.type === this.port) {
 
           this.server = http.createServer()
 
@@ -56,7 +55,7 @@ class MMicrosHttp extends EventEmitter{
             this.router(req, res, finalHandler(req, res))
           })
           this.server.listen(this.port)
-          console.log(`Http Worker ${process.pid} started`);
+          console.log(`Http Worker ${process.pid} started for Port ${this.port}`);
         }
 
       }

@@ -1,9 +1,8 @@
 // import our modules
 var EventEmitter = require('events')
 const cluster = require('cluster');
-var memShm = require('mem-shm');
-var mem = new memShm("mmicro","workers");
-const memoryId='share_worker'
+var mem = require('./worker_mem')
+
 
 
 class MMicrosSchedule extends EventEmitter{
@@ -19,17 +18,19 @@ class MMicrosSchedule extends EventEmitter{
   run(){
     if (cluster.isMaster) {
       for (let i = 0; i < this.files.length; i++) {
-
         var worker =  cluster.fork();
-        mem.set(memoryId,worker.id,{type:'schedule',file:this.files[i]});
+
+        mem.shmSet(worker.id,{type:'schedule',file:this.files[i]});
+        // console.log(`Create Worker For Schedule JOB on ${worker.id} Process(${worker.process.pid})`)
+
       }
     }else if(cluster.isWorker ){
 
-      let my = mem.get(memoryId,cluster.worker.id);
+      let my = mem.shmGet(cluster.worker.id);
       if(my.type==='schedule'){
       let addressWorker = this.jPath + "/" + my.file;
       require(addressWorker).JobRunning();
-      console.log(`Schedule Worker ${process.pid} For  Schedule System `);
+      console.log(`Schedule Worker ${process.pid} For ${my.file}`);
     }
     }
 
