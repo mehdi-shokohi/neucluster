@@ -1,6 +1,7 @@
 // handle `GET` requests to `/message`
-var Router = require('router')
-var router=Router()
+var router = require('router')()
+
+
 router.all('/', function (req, res) {
   let serv = new serv_one();
   serv.job_run()

@@ -1,6 +1,10 @@
 var httpBuilder=require("./component/HttpBuilder")
+var sch = require("./component/ScheduleBuilder")
+var nativeHttp = require("./component/nativeHTTPBuilder")
+// Optional MiddleWares
 var compression  = require('compression')
 var bodyParser   = require('body-parser')
+var url = require('url')
 
 
 
@@ -31,15 +35,25 @@ httpServer.on('pre_route',req=>{
 
 
 // Job Scheduler
-let sch = require("./component/ScheduleBuilder")
 var job = new sch(__dirname+"/jobs",['job1','job2']) // Set Job's Folder and File's
 job.run()
 
 
-
+// Run second HttpServer with Port 2040 and related Controller Path
 ControllerPath = __dirname+"/api_2040";
 var httpServer2 = new httpBuilder(2040,ControllerPath,4);
 httpServer2.run()
 
 
 
+// Native Nodejs HTTP Protocol Without Any Middleware and Router
+let nativeHTTP=new nativeHttp(2060,2);
+nativeHTTP.run()
+nativeHTTP.on('onRequest',(req,res)=>{
+
+  res.writeHead(200, {'Content-Type': 'application/json'});
+  var q = url.parse(req.url, true).query;
+
+  res.end(JSON.stringify({Value : q.value}));
+
+})

@@ -6,7 +6,6 @@ exports.shmGet=(key)=>{
   return mem.get(memID,key)
 }
 
-
 exports.shmSet=(key,value)=>{
   return mem.set(memID,key,value)
 }

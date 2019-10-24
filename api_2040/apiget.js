@@ -1,5 +1,4 @@
-var Router = require('router')
-var router=Router()
+var router = require('router')()
 router.all('/', (req, res) => {
   // console.log(req)
   res.end("Hello - "+(req.body.value))
