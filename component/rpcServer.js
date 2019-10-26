@@ -1,16 +1,17 @@
-// import our modules
-var http         = require('http')
-var EventEmitter = require('events')
+var WebSocketServer = require('rpc-websockets').Server
 const cluster = require('cluster');
 var mem = require('./worker_mem')
-class NativeHttpBuilder extends EventEmitter{
-
-  constructor(port,instance_Num){
-    super()
+var loader = require('./functions_loader')
+// instantiate Server and start listening for requests
+class rpcServer{
+  constructor (port,funcPath,instance_Num){
+    this.funcPath=funcPath
     this.port = port
     this.instanceNum=instance_Num <= 0 ? 1 :instance_Num
 
+
   }
+
 
   run(){
 
@@ -21,7 +22,7 @@ class NativeHttpBuilder extends EventEmitter{
 
         // Fork workers.
         for (let i = 0; i < this.instanceNum; i++) {
-     var worker =  cluster.fork();
+          var worker =  cluster.fork();
           mem.shmSet(worker.id,{type:this.port});
           // console.log(`Create Worker For HTTP Server On ${worker.id} Process(${worker.process.pid})`)
 
@@ -34,14 +35,10 @@ class NativeHttpBuilder extends EventEmitter{
         let my = mem.shmGet(cluster.worker.id);
 
         if (my.type === this.port) {
+          this.server = new WebSocketServer({ port: this.port, host: '0.0.0.0' })
+          loader(this.funcPath,this.server)
 
-          this.server = http.createServer()
-
-          this.server.on("request", (req, res) => {
-            this.emit('onRequest', req,res)
-          })
-          this.server.listen(this.port)
-          console.log(`Native Http Worker ${process.pid} started for Port ${this.port}`);
+          console.log(`RPC Server Worker ${process.pid} started for Port ${this.port}`);
         }
 
       }
@@ -49,10 +46,6 @@ class NativeHttpBuilder extends EventEmitter{
     }
 
   }
-
-
-
-
 }
 
-module.exports=NativeHttpBuilder
+module.exports=rpcServer
