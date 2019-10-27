@@ -16,7 +16,7 @@ router.all('/', async function (req, res) {
   })
 
 
-  await client.call("sum",[2,30],total=>{
+  await client.call("minus",[2,30],total=>{
     console.log(total)
   })
 

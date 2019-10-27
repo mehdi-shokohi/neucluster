@@ -28,7 +28,7 @@ class NativeHttpBuilder extends EventEmitter{
 
         }
         cluster.on('exit', (worker, code, signal) => {
-          console.log(`Http worker ${worker.process.pid} died`);
+          console.log(`native Http worker ${worker.process.pid} died`);
         });
       } else if(cluster.isWorker) {
         let my = mem.shmGet(cluster.worker.id);

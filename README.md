@@ -1,80 +1,151 @@
-# NeuCluster 
-ExpressLess , Http And Other Protocols For MicroServices
+## NeuCluster 
+
+Router base Http ,WebSocket ,RPC and  Other Protocols Server Builder by Node.js
 
 this project run only on linux os
 
-this project is an multi process server builder for backend and microservice's with below components :<br>
-<b><br>
-http builder with router and middleware<br>
-scheduler Builder <br>
-native http builder <br>
-rpc server (websocket jsonrpc2.0) for inter microservice communication <br>
-rpc client<br>
-</b>
+*this project is an multi process server builder for backend and microservice's with below components :*
+
+**http builder with router and middleware**
+
+**scheduler Builder**
+
+**native http builder**
+
+**rpc server (websocket jsonrpc2.0) for inter microservice communication**
+
+**rpc client**
+
+**WebSocket Server Builder**
 
 
-# run prject 
+
+### Run Project 
 
 \# npm install<br>
 \# npm start<br>
 
-# Sample Code 
+## Sample Code 
 
-due to the fact that system is designed for microservices applications , included services and controller file structure .
+*due to the fact that system is designed for microservices applications , included services and controller file structure .*
 
-<b>you can set services folder by below line code .</b>
-
-
-// Loading Services Folder's Files , For using Service Class , Build It  Based On Sample Template ,<br>
-// those will be  accessible By File Name in global space .<br>
-require('./component/service_loader')(__dirname+"/services")<br>
-<br>
-let ControllerPath = __dirname+"/api_2030";<br>
-<b>//Set Port and Controller Path Folder Name. and Cluster Instance Number<br></b>
-var http_server = new httpBuilder(2030,ControllerPath,1);<br>
-var x=0;<br><br>
-
-//Use Middleware For Router Of Http Server<br>
-http_server.getRouter().use(bodyParser.json());<br>
-http_server.getRouter().use(compression())<br>
-<b>//Run Http Server<br></b>
-http_server.run();<br>
-<br>
-<br>
-// Event hook in Pre Route . This Function will Run Before Process Of any middleware and route .<br>
-// In This Sample xx variable Added To req , that is Accessible In Any Controller .<br>
-<br>
-http_server.on('pre_route', req=>{<br>
-  req.xx={alpha:++x}<br>
-})<br>
+**you can set services folder by below line code .**
 
 
-
-<b>// Job Scheduler<br></b>
-var job = new sch(__dirname+"/jobs",['job1','job2']) // Set Job's Folder and File's<br>
-job.run()<br>
-<br>
-<br>
-<b>// Run second HttpServer with Port 2040 and related Controller Path<br></b>
-ControllerPath = __dirname+"/api_2040";<br>
-var httpServer2 = new httpBuilder(2040,ControllerPath,1);<br>
-httpServer2.run()<br>
-<br>
-<br>
-<br>
-<b>// Native Nodejs HTTP Protocol Without Any Middleware and Router<br></b>
-let nativeHTTP=new nativeHttp(2060,1);<br>
-nativeHTTP.run()<br>
-nativeHTTP.on('onRequest',(req,res)=>{<br>
-<br>
-  res.writeHead(200, {'Content-Type': 'application/json'});<br>
-  var q = url.parse(req.url, true).query;<br>
-<br>
-  res.end(JSON.stringify({Value : q.value}));<br>
-<br>
+*Loading Services Folder's Files , For using Service Class , Build It  Based On Sample Template ,
+those will be  accessible By File Name in global space .*
+```js
+require('./component/service_loader')(__dirname+"/services")
+```
+**Router Base HTTP Server**
+```js
+let ControllerPath = __dirname+"/api_2030";
+//Set Port and Controller Path Folder Name. and Cluster Instance Number
+var http_server = new httpBuilder(2030,ControllerPath,1);
+var x=0;
+````
+*Use Middleware For Router Of Http Server*
+```js
+http_server.getRouter().use(bodyParser.json());
+http_server.getRouter().use(compression())
+//Run Http Server
+http_server.run();
+```
+*Event hook in Pre Route . This Function will Run Before Process Of any middleware and route .
+ In This Sample xx variable Added To req , that is Accessible In Any Controller .*
+```js
+http_server.on('pre_route', req=>{
+  req.xx={alpha:++x}
 })
-<br>
-<br>
-<b>// Initiate and Running RPC Server<br></b>
-var rpc = new rpc_server(8080,__dirname+'/rpcFunctions',1)<br>
-rpc.run()<br>
+```
+
+
+
+**Job Scheduler**
+```js
+var job = new sch(__dirname+"/jobs",['job1','job2']) // Set Job's Folder and File's
+job.run();
+```
+
+*Run second HttpServer with Port 2040 and related Controller Path*
+```js
+ControllerPath = __dirname+"/api_2040";
+var httpServer2 = new httpBuilder(2040,ControllerPath,1);
+httpServer2.run()
+```
+**Native Nodejs HTTP Protocol Without Any Middleware and Router**
+```js
+let nativeHTTP=new nativeHttp(2060,1);
+nativeHTTP.run()
+nativeHTTP.on('onRequest',(req,res)=>{
+
+  res.writeHead(200, {'Content-Type': 'application/json'});
+  var q = url.parse(req.url, true).query;
+
+  res.end(JSON.stringify({Value : q.value}));
+
+})
+````
+
+
+**Initiate and Running RPC Server**
+```js
+var rpc = new rpc_server(8080,__dirname+'/rpcFunctions',1)
+rpc.run()
+```
+
+
+**initiate WebSocket Server .**
+```js
+var ws = new websocket(3000,null,3)
+ws.run();
+ws.on('startServer',()=>{
+  console.log("WebSocket Server  Started .")
+})
+
+ws.on('request',(req)=>{
+//req.reject()  if (your logic.)
+})
+
+ws.on('connection',(connection)=>{
+  console.log(`Client ${connection.remoteAddress} Connected.`)
+
+  connection.on('message', function(message) {
+
+      console.log('Client Message is ' + message.utf8Data);
+      connection.sendUTF(`Your Message Is ${message.utf8Data} . Thanx For Message`);
+
+
+  });
+
+  connection.on('close', function(closeCode, data) {
+    console.log(connection.remoteAddress + ' disconnected.');
+  });
+})
+```
+
+*Web Socket Client*
+
+```html
+<script>
+    var wsServer = 'ws://127.0.0.1:3000';
+    
+    var websocket = new WebSocket(wsServer); 
+    websocket.onopen = function (evt) { 
+        console.log("Connected to WebSocket server.");
+    }; 
+    
+    websocket.onclose = function (evt) { 
+        console.log("Disconnected"); 
+    }; 
+    
+    websocket.onmessage = function (evt) { 
+        console.log( evt.data); 
+    
+    }; 
+    
+    websocket.onerror = function (evt, e) {
+        console.log('Error occured: ' + evt.data);
+    };
+    </script> 
+```

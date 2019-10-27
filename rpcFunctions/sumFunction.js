@@ -1,7 +1,7 @@
 module.exports=(server)=>{
 //Register Function For Remote Client
   server.register('sum',params=>{
-    return params[0]+params[1]
+    return Number(params[0])+Number(params[1])
   })
 
 
