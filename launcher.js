@@ -2,8 +2,6 @@ var httpBuilder=require("./component/HttpBuilder")
 var sch = require("./component/ScheduleBuilder")
 var nativeHttp = require("./component/nativeHTTPBuilder")
 var rpc_server = require("./component/rpcServer")
-var rpc_client = require("./component/rpcClient")
-var client = new rpc_client("ws://localhost:8080")
 // Optional MiddleWares
 var compression  = require('compression')
 var bodyParser   = require('body-parser')
@@ -17,20 +15,20 @@ var url = require('url')
 require('./component/service_loader')(__dirname+"/services")
 
 let ControllerPath = __dirname+"/api_2030";
-var launcher = new httpBuilder(2030,ControllerPath,1);//Set Port and Controller Path Folder Name. and Cluster Instance Number
+var http_server = new httpBuilder(2030,ControllerPath,1);//Set Port and Controller Path Folder Name. and Cluster Instance Number
 var x=0;
 
 //Use Middleware For Router Of Http Server
-launcher.getRouter().use(bodyParser.json());
-launcher.getRouter().use(compression())
+http_server.getRouter().use(bodyParser.json());
+http_server.getRouter().use(compression())
 //Run Server
-launcher.run();
+http_server.run();
 
 
 // Event hook in Pre Route . This Function will Run Before Process Of any middleware and route .
 // In This Sample xx variable Added To req , that is Accessible In Any Controller .
 
-launcher.on('pre_route', req=>{
+http_server.on('pre_route', req=>{
   req.xx={alpha:++x}
 })
 
