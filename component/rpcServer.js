@@ -29,7 +29,7 @@ class rpcServer{
 
         }
         cluster.on('exit', (worker, code, signal) => {
-          console.log(`Http worker ${worker.process.pid} died`);
+          console.log(`RPC worker ${worker.process.pid} died`);
         });
       } else if(cluster.isWorker) {
         let my = mem.shmGet(cluster.worker.id);

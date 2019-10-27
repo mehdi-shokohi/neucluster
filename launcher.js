@@ -2,6 +2,7 @@ var httpBuilder=require("./component/HttpBuilder")
 var sch = require("./component/ScheduleBuilder")
 var nativeHttp = require("./component/nativeHTTPBuilder")
 var rpc_server = require("./component/rpcServer")
+var websocket = require("./component/webSocketBuilder")
 // Optional MiddleWares
 var compression  = require('compression')
 var bodyParser   = require('body-parser')
@@ -35,8 +36,8 @@ http_server.on('pre_route', req=>{
 
 
 // Job Scheduler
-var job = new sch(__dirname+"/jobs",['job1','job2']) // Set Job's Folder and File's
-job.run()
+// var job = new sch(__dirname+"/jobs",['job1','job2']) // Set Job's Folder and File's
+// job.run()
 
 
 // Run second HttpServer with Port 2040 and related Controller Path
@@ -65,4 +66,29 @@ rpc.run()
 
 //Rpc Client Sample  : call api_2030/message => http://localhost:2030/message
 
+// initiate WebSocket Server .
+var ws = new websocket(3000,null,3)
+ws.run();
+ws.on('startServer',()=>{
+  console.log("WebSocket Server  Started .")
+})
 
+ws.on('request',(req)=>{
+//req.reject()  if (your logic.)
+})
+
+ws.on('connection',(connection)=>{
+  console.log(`Client ${connection.remoteAddress} Connected.`)
+
+  connection.on('message', function(message) {
+
+      console.log('Client Message is ' + message.utf8Data);
+      connection.sendUTF(`Your Message Is ${message.utf8Data} . Thanx For Message`);
+
+
+  });
+
+  connection.on('close', function(closeCode, data) {
+    console.log(connection.remoteAddress + ' disconnected.');
+  });
+})
