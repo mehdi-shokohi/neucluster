@@ -2,9 +2,12 @@
 
 Router base Http ,WebSocket ,RPC and  Other Protocols Server Builder by Node.js
 
+
 this project run only on linux os
 
 *this project is an multi process server builder for backend and microservice's with below components :*
+
+
 
 **http builder with router and middleware**
 
@@ -22,8 +25,10 @@ this project run only on linux os
 
 ### Run Project 
 
-\# npm install<br>
-\# npm start<br>
+
+\# npm install
+
+\# npm start
 
 ## Sample Code 
 
@@ -106,6 +111,57 @@ ws.on('startServer',()=>{
 ws.on('request',(req)=>{
 //req.reject()  if (your logic.)
 })
+
+```
+
+
+
+**Job Scheduler**
+```js
+var job = new sch(__dirname+"/jobs",['job1','job2']) // Set Job's Folder and File's
+job.run();
+```
+
+*Run second HttpServer with Port 2040 and related Controller Path*
+```js
+ControllerPath = __dirname+"/api_2040";
+var httpServer2 = new httpBuilder(2040,ControllerPath,1);
+httpServer2.run()
+```
+**Native Nodejs HTTP Protocol Without Any Middleware and Router**
+```js
+let nativeHTTP=new nativeHttp(2060,1);
+nativeHTTP.run()
+nativeHTTP.on('onRequest',(req,res)=>{
+
+  res.writeHead(200, {'Content-Type': 'application/json'});
+  var q = url.parse(req.url, true).query;
+
+  res.end(JSON.stringify({Value : q.value}));
+
+})
+````
+
+
+**Initiate and Running RPC Server**
+```js
+var rpc = new rpc_server(8080,__dirname+'/rpcFunctions',1)
+rpc.run()
+```
+
+
+**initiate WebSocket Server .**
+```js
+var ws = new websocket(3000,null,3)
+ws.run();
+ws.on('startServer',()=>{
+  console.log("WebSocket Server  Started .")
+})
+
+ws.on('request',(req)=>{
+//req.reject()  if (your logic.)
+})
+
 
 ws.on('connection',(connection)=>{
   console.log(`Client ${connection.remoteAddress} Connected.`)
