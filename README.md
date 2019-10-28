@@ -95,6 +95,9 @@ rpc.run()
 ```
 
 
+*Rpc Client Sample  : call api_2030/message => http://localhost:2030/message*
+
+
 **initiate WebSocket Server .**
 ```js
 var ws = new websocket(3000,null,3)
