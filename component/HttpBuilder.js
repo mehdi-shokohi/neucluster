@@ -5,11 +5,14 @@ var finalHandler = require('finalhandler')
 var EventEmitter = require('events')
 const cluster = require('cluster');
 var mem = require('./worker_mem')
+const https = require('spdy');
+
 class MMicrosHttp extends EventEmitter{
 
-  constructor(port,controller_path,instance_Num){
+  constructor(port,options,controller_path,instance_Num){
     super()
     this.port = port
+    this.options=options||{}
     this.router=Router()
     this.cPath=controller_path
     this.instanceNum=instance_Num <= 0 ? 1 :instance_Num
@@ -47,8 +50,13 @@ class MMicrosHttp extends EventEmitter{
         let my = mem.shmGet(cluster.worker.id);
 
         if (my.type === this.port) {
+          if(this.options)
+            if(this.options.key && this.options.cert){
+              this.server = https.createServer(this.options)
+            }else{
+              this.server = http.createServer()
+            }
 
-          this.server = http.createServer()
 
           this.server.on("request", (req, res) => {
             this.emit('pre_route', req)

@@ -7,6 +7,8 @@ var websocket = require("./component/webSocketBuilder")
 var compression  = require('compression')
 var bodyParser   = require('body-parser')
 var url = require('url')
+var fs = require('fs')
+var path = require('path')
 
 
 
@@ -16,7 +18,7 @@ var url = require('url')
 require('./component/service_loader')(__dirname+"/services")
 
 let ControllerPath = __dirname+"/api_2030";
-var http_server = new httpBuilder(2030,ControllerPath,1);//Set Port and Controller Path Folder Name. and Cluster Instance Number
+var http_server = new httpBuilder(2030,null,ControllerPath,1);//Set Port and Controller Path Folder Name. and Cluster Instance Number
 var x=0;
 
 //Use Middleware For Router Of Http Server
@@ -42,13 +44,41 @@ http_server.on('pre_route', req=>{
 
 // Run second HttpServer with Port 2040 and related Controller Path
 ControllerPath = __dirname+"/api_2040";
-var httpServer2 = new httpBuilder(2040,ControllerPath,1);
+
+let key = path.join(__dirname, 'server.key');
+let cert = path.join(__dirname, 'server.crt');
+var options = {
+  key: fs.readFileSync(key),
+  cert: fs.readFileSync(cert),
+  requestCert: false,
+  rejectUnauthorized: false,
+  ciphers: [
+    "ECDHE-RSA-AES256-SHA384",
+    "DHE-RSA-AES256-SHA384",
+    "ECDHE-RSA-AES256-SHA256",
+    "DHE-RSA-AES256-SHA256",
+    "ECDHE-RSA-AES128-SHA256",
+    "DHE-RSA-AES128-SHA256",
+    "HIGH",
+    "!aNULL",
+    "!eNULL",
+    "!EXPORT",
+    "!DES",
+    "!RC4",
+    "!MD5",
+    "!PSK",
+    "!SRP",
+    "!CAMELLIA"
+  ].join(':'),
+  honorCipherOrder: true
+};
+var httpServer2 = new httpBuilder(2040,options,ControllerPath,1);
 httpServer2.run()
 
 
 
 // Native Nodejs HTTP Protocol Without Any Middleware and Router
-let nativeHTTP=new nativeHttp(2060,1);
+let nativeHTTP=new nativeHttp(2060,options,1);
 nativeHTTP.run()
 nativeHTTP.on('onRequest',(req,res)=>{
 
@@ -67,7 +97,7 @@ rpc.run()
 //Rpc Client Sample  : call api_2030/message => http://localhost:2030/message
 
 // initiate WebSocket Server .
-var ws = new websocket(3000,null,3)
+var ws = new websocket(3000,options,2)
 ws.run();
 
 ws.on('startServer',()=>{

@@ -3,7 +3,7 @@ var mem = require('./worker_mem')
 var WebSocketServer = require('websocket').server;
 var EventEmitter = require('events')
 var http = require('http');
-
+var https = require('https');
 class webSocketBuilder extends EventEmitter{
   constructor(port,options,instanceNum){
     super()
@@ -37,10 +37,14 @@ class webSocketBuilder extends EventEmitter{
         let my = mem.shmGet(cluster.worker.id);
 
         if (my.type === this.port) {
+          if(this.options)
+            if(this.options.key && this.options.cert){
+              this.httpserver = https.createServer(this.options)
+            }else {
+              this.httpserver = http.createServer(function(request, response) {
+                response.end();
+              });            }
 
-          this.httpserver = http.createServer(function(request, response) {
-            response.end();
-          });
           this.httpserver.listen(this.port, function() {
             _self.emit('startServer')
           });

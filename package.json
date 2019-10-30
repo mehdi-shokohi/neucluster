@@ -20,6 +20,7 @@
     "rpc-websockets": "^4.6.1",
     "sequelize": "^5.3.5",
     "sequelize-cli": "^5.4.0",
+    "spdy": "^4.0.1",
     "websocket": "^1.0.30"
   },
   "scripts": {

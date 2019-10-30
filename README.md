@@ -18,12 +18,17 @@ this project run only on linux os
 
 **WebSocket Server Builder**
 
+**HTTP/2**
 
 
+#
 ### Run Project 
 
 \# npm install<br>
 \# npm start<br>
+
+
+
 
 ## Sample Code 
 
@@ -41,7 +46,7 @@ require('./component/service_loader')(__dirname+"/services")
 ```js
 let ControllerPath = __dirname+"/api_2030";
 //Set Port and Controller Path Folder Name. and Cluster Instance Number
-var http_server = new httpBuilder(2030,ControllerPath,1);
+var http_server = new httpBuilder(2030,null,ControllerPath,1);
 var x=0;
 ````
 *Use Middleware For Router Of Http Server*
@@ -67,15 +72,47 @@ var job = new sch(__dirname+"/jobs",['job1','job2']) // Set Job's Folder and Fil
 job.run();
 ```
 
-*Run second HttpServer with Port 2040 and related Controller Path*
+*Run second HttpServer with Port 2040 , Https Options(HTTP/2) and related Controller Path*
 ```js
 ControllerPath = __dirname+"/api_2040";
-var httpServer2 = new httpBuilder(2040,ControllerPath,1);
+
+let key = path.join(__dirname, 'server.key');
+let cert = path.join(__dirname, 'server.crt');
+var options = {
+  key: fs.readFileSync(key),
+  cert: fs.readFileSync(cert),
+  requestCert: false, //Set True on Release
+  rejectUnauthorized: false, //Set True on Release
+  ciphers: [
+    "ECDHE-RSA-AES256-SHA384",
+    "DHE-RSA-AES256-SHA384",
+    "ECDHE-RSA-AES256-SHA256",
+    "DHE-RSA-AES256-SHA256",
+    "ECDHE-RSA-AES128-SHA256",
+    "DHE-RSA-AES128-SHA256",
+    "HIGH",
+    "!aNULL",
+    "!eNULL",
+    "!EXPORT",
+    "!DES",
+    "!RC4",
+    "!MD5",
+    "!PSK",
+    "!SRP",
+    "!CAMELLIA"
+  ].join(':'),
+  honorCipherOrder: true
+};
+ControllerPath = __dirname+"/api_2040";
+var httpServer2 = new httpBuilder(2040,options,ControllerPath,1);
 httpServer2.run()
 ```
 **Native Nodejs HTTP Protocol Without Any Middleware and Router**
+
+*For HTTPS and HTTP/2 Communication set Options for initiation of NativeHttp Class*
+
 ```js
-let nativeHTTP=new nativeHttp(2060,1);
+let nativeHTTP=new nativeHttp(2060,options,1);
 nativeHTTP.run()
 nativeHTTP.on('onRequest',(req,res)=>{
 
@@ -99,8 +136,10 @@ rpc.run()
 
 
 **initiate WebSocket Server .**
+
+*For SSL WebSocket Communication set Options for initiation of websocket Class*
 ```js
-var ws = new websocket(3000,null,3)
+var ws = new websocket(3000,null,3) 
 ws.run();
 ws.on('startServer',()=>{
   console.log("WebSocket Server  Started .")
@@ -131,7 +170,7 @@ ws.on('connection',(connection)=>{
 
 ```html
 <script>
-    var wsServer = 'ws://127.0.0.1:3000';
+    var wsServer = 'ws://127.0.0.1:3000'; //wss for ssl
     
     var websocket = new WebSocket(wsServer); 
     websocket.onopen = function (evt) { 
