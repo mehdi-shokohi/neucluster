@@ -20,6 +20,7 @@ this project run only on linux os
 
 **HTTP/2**
 
+**Custom Server Builder**
 
 #
 ### Run Project 
@@ -190,4 +191,56 @@ ws.on('connection',(connection)=>{
         console.log('Error occured: ' + evt.data);
     };
     </script> 
+```
+*Android WebSocket Client*
+
+**https://github.com/TakahikoKawasaki/nv-websocket-client** 
+
+##
+**Custom Server Builder**
+
+*In case of Create and Add your Custom Server,the only thing you need to do is to Extend serverBuilder Class and Implement `serverInit` Method .*
+
+*As an example, We have a Custom  HTTP Server below*
+
+```js
+const serverBuilder = require('./component/serverBuilder')
+const http = require('http')
+
+
+//definition of class .
+class myCustomServer extends serverBilder{
+  constructor (port,instance,option){
+    super(port, instance)
+
+  }
+
+
+  serverInit(){
+    this.server = http.createServer()
+    this.server.listen(this.port)
+
+    console.log(`My Custom Http Worker ${process.pid} started for Port ${this.port}`);
+    this.server.on('request',(req,res)=>{
+      this.emit('onRequest', req,res)
+    })
+  }
+
+}
+
+// initiate my Custom Class 
+// port : 10010
+// instance : 2
+var launch = new myCustomServer(10010,2,null) 
+launch.run()
+
+launch.on('onRequest',(req,res)=>{
+
+  // console.log(req)
+  res.writeHead(200, {'Content-Type': 'application/json'});
+  res.end(JSON.stringify( req.headers))
+  
+})
+
+
 ```
