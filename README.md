@@ -206,7 +206,7 @@ ws.on('connection',(connection)=>{
 ```js
 const server = require('./component/serverBuilder')
 
-class myCustomServer extends server{
+class mySocketIO extends server{
   constructor (port,instance,option){
     super(port, instance)
 
