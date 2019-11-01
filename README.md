@@ -20,7 +20,7 @@ this project run only on linux os
 
 **HTTP/2**
 
-**Custom Server Builder - ex. Socket.IO**
+**Custom Server Builder - e.g., Socket.IO Implemented **
 
 #
 ### Run Project 
