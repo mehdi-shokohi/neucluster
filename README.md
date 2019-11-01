@@ -20,7 +20,9 @@ this project run only on linux os
 
 **HTTP/2**
 
-**Custom Server Builder - e.g., Socket.IO Implemented **
+**Custom Server Builder - e.g., Socket.IO Implemented**
+
+**Sequelize ORM**
 
 #
 ### Run Project 
@@ -265,4 +267,60 @@ sio.run()
 </script>
 </body>
 </html>
+```
+
+in Chrome or Mozilla Console run `socket.emit("hello",{yourkey : 'yourValue'});` for sending data to Server.
+#
+
+**ORM and Sequelize Models Loader**
+
+https://sequelize.org
+
+Load DB Models Folder and set a File For Associate Models Relations.
+
+```js
+let config = {
+  "development": {
+    "username": "root",
+    "password": "123456",
+    "database": "my_db",
+    "host": "localhost",
+    "dialect": "mariadb",
+    "port": 3306,
+    "pool": {
+      "max": 10,
+      "min": 0,
+      "acquire": 30000,
+      "idle": 10000
+    },
+    "define": {
+      "underscored": false,
+      "syncOnAssociation": true,
+      "charset": "utf8mb4",
+      "collate": "utf8mb4_general_ci",
+      "timestamps": false
+    },    
+    dialectOptions: {
+      useUTC: true,
+      timezone: 'Etc/GMT+0'
+    },
+    timezone: 'Etc/GMT+0' 
+  }
+}
+
+let db = require('./component/db_models_loader')(config.development,__dirname+'/../models',__dirname+'/../models/relations.js')
+
+```
+*e.g. ,*
+```js
+  db.user.findOne({
+    where :{
+      userId : 1000,
+
+    }
+  }).then(user_data=>{
+
+  }).catch(err=>{
+    
+  })
 ```

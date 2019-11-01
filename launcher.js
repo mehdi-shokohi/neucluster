@@ -44,8 +44,8 @@ http_server.on('pre_route', req=>{
 // Run second HttpServer with Port 2040 and related Controller Path
 ControllerPath = __dirname+"/api_2040";
 
-let key = path.join(__dirname, 'server.key');
-let cert = path.join(__dirname, 'server.crt');
+let key = path.join(__dirname, '/temp/server.key');
+let cert = path.join(__dirname, '/temp/server.crt');
 var options = {
   key: fs.readFileSync(key),
   cert: fs.readFileSync(cert),
