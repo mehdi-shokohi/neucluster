@@ -24,6 +24,7 @@ this project run only on linux os
 
 **Sequelize ORM**
 
+**tmpfs (Ram Base) Config Store , RunTime Config Change By `neuconf` Tool**
 #
 ### Run Project 
 
@@ -308,7 +309,10 @@ let config = {
   }
 }
 
-let db = require('./component/db_models_loader')(config.development,__dirname+'/../models',__dirname+'/../models/relations.js')
+
+let models_folder = __dirname+'/models'
+let relations_file = __dirname+'/models/relations.js'
+let db = require('./component/db_models_loader')(config.development,models_folder,relations_file)
 
 ```
 *e.g. ,*
@@ -324,3 +328,24 @@ let db = require('./component/db_models_loader')(config.development,__dirname+'/
     
   })
 ```
+
+**Change Value of Config Setting**
+
+```
+ # chmod a+x bin/neuconf
+ # neuconf set key value  
+ # neuconf get key
+ # neuconf get 
+```
+*For Example, `analyticsUrl` by default is `https://analytics.server1.com` that Will Be Changed By below Command*
+```
+# neuconf set analyticsUrl https://analytic.server22.com
+```
+*For Using New Value in RunTime,*
+```js
+var mem = require('./tools').shmem
+mem.shmGet_dyn('analyticsUrl')
+```
+
+
+

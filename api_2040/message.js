@@ -7,7 +7,7 @@ router.all('/', function (req, res) {
 
   res.statusCode = 200
   res.setHeader('Content-Type', 'text/plain; charset=utf-8')
-  res.end(JSON.stringify(driver))
+  res.end(JSON.stringify({server : 2040}))
 
 })
 

@@ -10,3 +10,9 @@ exports.shmGet=(key)=>{
 exports.shmSet=(key,value)=>{
   return mem.set(memID,key,value)
 }
+
+
+exports.shmGet_dyn=(key)=>{
+  mem=  new memShm("mmicro","user_mem");
+  return mem.get(memID,key)
+}
