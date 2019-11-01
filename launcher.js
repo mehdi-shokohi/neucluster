@@ -12,7 +12,6 @@ var path = require('path')
 
 
 
-
 // Loading Services Folder's Files , For using Service Class , Build It  Based On Sample Template ,
 // those will be  accessible By File Name.
 require('./component/service_loader')(__dirname+"/services")
@@ -101,7 +100,7 @@ var ws = new websocket(3000,options,2)
 ws.run();
 
 ws.on('startServer',()=>{
-  console.log("WebSocket Server  Started .")
+  // console.log("WebSocket Server  Started .")
 })
 
 ws.on('request',(req)=>{
@@ -123,3 +122,43 @@ ws.on('connection',(connection)=>{
     console.log(connection.remoteAddress + ' disconnected.');
   });
 })
+
+// Custom Server Builder
+
+const server = require('./component/serverBuilder')
+
+class mySocketIO extends server{
+  constructor (port,instance,option){
+    super(port, instance)
+
+  }
+
+  // set Log Message Or other Operation In server Process's Start Up
+  afterStart(){
+    console.log(`my Custom Server(Socket.IO) Worker ${process.pid} started for Port ${this.port}`);
+  }
+
+  serverInit(){
+    this.server = require('http').createServer();
+    const io = require('socket.io')(this.server);
+
+
+    io.on('connection', client => {
+      client.on('hello',(data)=>{
+        console.log(data)
+        client.emit('hi',{data:`hi Client ${client.id}`})
+      })
+     client.on('disconnect', () => {});
+    });
+    this.server.listen(this.port);
+  }
+
+}
+
+
+var sio = new mySocketIO(10010,2,null)
+sio.run()
+
+
+
+

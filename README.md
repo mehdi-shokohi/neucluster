@@ -20,7 +20,7 @@ this project run only on linux os
 
 **HTTP/2**
 
-**Custom Server Builder**
+**Custom Server Builder - ex. Socket.IO**
 
 #
 ### Run Project 
@@ -201,29 +201,35 @@ ws.on('connection',(connection)=>{
 
 *In case of Create and Add your Custom Server,the only thing you need to do is to Extend serverBuilder Class and Implement `serverInit` Method .*
 
-*As an example, We have a Custom  HTTP Server below*
+*As an example, We have a Custom Server with Socket.io Protocol below*
 
 ```js
-const serverBuilder = require('./component/serverBuilder')
-const http = require('http')
+const server = require('./component/serverBuilder')
 
-
-//definition of class .
-class myCustomServer extends serverBilder{
+class myCustomServer extends server{
   constructor (port,instance,option){
     super(port, instance)
 
   }
 
+  // set Log Message Or other Operation In server Process's Start Up
+  afterStart(){
+    console.log(`my Custom Server(Socket.IO) Worker ${process.pid} started for Port ${this.port}`);
+  }
 
   serverInit(){
-    this.server = http.createServer()
-    this.server.listen(this.port)
+    this.server = require('http').createServer();
+    const io = require('socket.io')(this.server);
 
-    console.log(`My Custom Http Worker ${process.pid} started for Port ${this.port}`);
-    this.server.on('request',(req,res)=>{
-      this.emit('onRequest', req,res)
-    })
+
+    io.on('connection', client => {
+      client.on('hello',(data)=>{
+        console.log(data)
+        client.emit('hi',{data:`hi Client ${client.id}`})
+      })
+     client.on('disconnect', () => {});
+    });
+    this.server.listen(this.port);
   }
 
 }
@@ -231,16 +237,32 @@ class myCustomServer extends serverBilder{
 // initiate my Custom Class 
 // port : 10010
 // instance : 2
-var launch = new myCustomServer(10010,2,null) 
-launch.run()
+var sio = new mySocketIO(10010,2,null)
+sio.run()
 
-launch.on('onRequest',(req,res)=>{
+```
+*Socket.IO Client*
 
-  // console.log(req)
-  res.writeHead(200, {'Content-Type': 'application/json'});
-  res.end(JSON.stringify( req.headers))
-  
-})
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+  var socket = io('http://localhost:10010',{transports: ['websocket']}); 
+  socket.on('connect', function(){
+    console.log('socket io connected')
 
-
+  });
+  socket.on('hi', function(data){
+    console.log(data)
+  });
+  socket.on('disconnect', function(){});
+</script>
+</body>
+</html>
 ```

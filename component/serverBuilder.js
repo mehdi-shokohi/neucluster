@@ -31,8 +31,9 @@ class serverBuilder extends EventEmitter{
         let my = mem.shmGet(cluster.worker.id);
 
         if (my.type === this.port) {
-          this.serverInit()
 
+          this.serverInit()
+          this.afterStart()
         }
 
 
@@ -40,6 +41,12 @@ class serverBuilder extends EventEmitter{
     }
 
   }
+
+  afterStart(){
+    console.log(`My Custom Server Worker ${process.pid} started for Port ${this.port}`);
+
+  }
+
 
   serverInit(){
     console.log("Add 'serverInit' Method  For Your Custom Server ")
