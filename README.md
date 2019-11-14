@@ -77,6 +77,13 @@ job.run();
 ```
 
 *Run second HttpServer with Port 2040 , Https Options(HTTP/2) and related Controller Path*
+
+In First Generate Self Sign Certificate For `key` and `cert` Value 
+
+```
+# openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./server.key -out server.crt
+```
+
 ```js
 ControllerPath = __dirname+"/api_2040";
 
@@ -87,25 +94,7 @@ var options = {
   cert: fs.readFileSync(cert),
   requestCert: false, //Set True on Release
   rejectUnauthorized: false, //Set True on Release
-  ciphers: [
-    "ECDHE-RSA-AES256-SHA384",
-    "DHE-RSA-AES256-SHA384",
-    "ECDHE-RSA-AES256-SHA256",
-    "DHE-RSA-AES256-SHA256",
-    "ECDHE-RSA-AES128-SHA256",
-    "DHE-RSA-AES128-SHA256",
-    "HIGH",
-    "!aNULL",
-    "!eNULL",
-    "!EXPORT",
-    "!DES",
-    "!RC4",
-    "!MD5",
-    "!PSK",
-    "!SRP",
-    "!CAMELLIA"
-  ].join(':'),
-  honorCipherOrder: true
+
 };
 ControllerPath = __dirname+"/api_2040";
 var httpServer2 = new httpBuilder(2040,options,ControllerPath,1);
