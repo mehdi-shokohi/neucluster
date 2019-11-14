@@ -2,7 +2,7 @@ var fs = require('fs');
   walkSync = function (dir,router) {
     files = fs.readdirSync(dir)
     files.forEach(function (file) {
-        if (file.match(/\.js$/) !== null && file !== 'noname.js') {
+        if (file.match(/\.js$/) !== null) {
           let name = file.replace('.js', '')
           address = dir.replace(dir + '/\/', '.') + '/' + name
           router.use('/' + name, require(address))
