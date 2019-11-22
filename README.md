@@ -338,6 +338,6 @@ mem.shmGet_dyn('analyticsUrl')
 
 **How Can I Create a Custom Extended Server Based on NeuCluster ?**
 
-For Instance `https://github.com/mehdi-shokohi/MyNeuCluster` Repo is A Custom Extended HTTP Server
+For Instance https://github.com/mehdi-shokohi/MyNeuCluster Repo is A Custom Extended HTTP Server
 
 
