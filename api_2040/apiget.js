@@ -1,7 +1,9 @@
 var router = require('router')()
-router.all('/', (req, res) => {
-  // console.log(req)
-  res.end("Hello - "+(req.body.value))
+router.all('/',  (req, res) => {
+  console.log(req.body)
+  res.setHeader('Content-Type', 'application/json; charset=utf-8')
+  res.setHeader('Access-Control-Allow-Origin' , '*')
+  res.end(JSON.stringify(req.body))
 
 })
 
