@@ -16,7 +16,7 @@ class MMicrosHttp extends EventEmitter{
     this.router=Router()
     this.cPath=controller_path
     this.instanceNum=instance_Num <= 0 ? 1 :instance_Num
-
+    this.prePath=this.options.prePath?this.options.prePath : ''
   }
 
 
@@ -28,7 +28,7 @@ class MMicrosHttp extends EventEmitter{
     this.router=my_router
   }
   run(){
-    require('./controller_loader')(this.cPath,this.router)
+    require('./controller_loader')(this.cPath,this.router,this.prePath)
 
     if(this.instanceNum>0){
 

@@ -44,9 +44,10 @@ http_server.on('pre_route', req=>{
 // Run second HttpServer with Port 2040 and related Controller Path
 ControllerPath = __dirname+"/api_2040";
 
-let key = path.join(__dirname, '/temp/server.key');
-let cert = path.join(__dirname, '/temp/server.crt');
+let key = path.join(__dirname, 'server.key');
+let cert = path.join(__dirname, 'server.crt');
 var options = {
+  prePath: '/v1',
   key: fs.readFileSync(key),
   cert: fs.readFileSync(cert),
   requestCert: false,
@@ -72,10 +73,12 @@ var options = {
   honorCipherOrder: true
 };
 var httpServer2 = new httpBuilder(2040,options,ControllerPath,1);
+
+httpServer2.getRouter().use(bodyParser.json());
+httpServer2.getRouter().use(compression())
 httpServer2.run()
-
-
-
+//
+//
 // Native Nodejs HTTP Protocol Without Any Middleware and Router
 let nativeHTTP=new nativeHttp(2060,options,1);
 nativeHTTP.run()

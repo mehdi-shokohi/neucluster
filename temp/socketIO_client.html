@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="./socket.io.js"></script>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+  var socket = io('http://localhost:10010',{transports: ['websocket']}); 
+  socket.on('connect', function(){
+    console.log('socket io connected')
+
+  });
+  socket.on('hi', function(data){
+    console.log(data)
+  });
+  socket.on('disconnect', function(){});
+</script>
+</body>
+</html>

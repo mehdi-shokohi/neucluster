@@ -76,7 +76,7 @@ var job = new sch(__dirname+"/jobs",['job1','job2']) // Set Job's Folder and Fil
 job.run();
 ```
 
-*Run second HttpServer with Port 2040 , Https Options(HTTP/2) and related Controller Path*
+*Run second HttpServer with Port 2040 And Added version by `/v1` to Path by `prePath` Option , Https Options(HTTP/2) and related Controller Path*
 
 In First Generate Self Sign Certificate For `key` and `cert` Value 
 
@@ -90,6 +90,7 @@ ControllerPath = __dirname+"/api_2040";
 let key = path.join(__dirname, 'server.key');
 let cert = path.join(__dirname, 'server.crt');
 var options = {
+  prePath: "/v1",
   key: fs.readFileSync(key),
   cert: fs.readFileSync(cert),
   requestCert: false, //Set True on Release
@@ -98,6 +99,8 @@ var options = {
 };
 ControllerPath = __dirname+"/api_2040";
 var httpServer2 = new httpBuilder(2040,options,ControllerPath,1);
+httpServer2.getRouter().use(bodyParser.json());
+httpServer2.getRouter().use(compression())
 httpServer2.run()
 ```
 **Native Nodejs HTTP Protocol Without Any Middleware and Router**
@@ -336,5 +339,8 @@ var mem = require('./tools').shmem
 mem.shmGet_dyn('analyticsUrl')
 ```
 
+**How Can I Create a Custom Extended Server Based on NeuCluster ?**
+
+For Instance https://github.com/mehdi-shokohi/MyNeuCluster Repo is A Custom Extended HTTP Server
 
 

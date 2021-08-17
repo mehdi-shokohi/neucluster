@@ -1,5 +1,5 @@
 
-var Client=require("jsonrpc-websocket-client").default
+var Client=require("jsonrpc-websocket-client").JsonRpcWebSocketClient
 class rpcClient{
 constructor (address) {
   this.client = new Client(address)
